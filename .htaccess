@@ -1,0 +1,25 @@
+RewriteEngine On
+RewriteCond %{SERVER_PORT} !^443$
+RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=301,L]
+
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+    RewriteEngine On
+</IfModule>
+deny from 206.128.176.84
+deny from 139.87.71.160
+<IfModule mod_rewrite.c>
+    Redirect 301 /wp-content https://windcloud.de/
+    Redirect 301 /wp-login.php https://windcloud.de/
+    Redirect 301 /ads.txt https://windcloud.de/
+    Redirect 301 /wordpress/wp-admin https://windcloud.de/
+    Redirect 301 /wp-admin https://windcloud.de/
+    Redirect 301 /uploads  https://windcloud.de/
+    RewriteCond %{REQUEST_URI} ^/.*
+    RewriteRule ^(.*)$ web/$1 [L]
+
+    RewriteCond %{REQUEST_URI} !^/web/
+    RewriteCond %{REQUEST_FILENAME} !-f [OR]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^.*$ web/index.php
+</IfModule>

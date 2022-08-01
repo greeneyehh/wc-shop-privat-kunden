@@ -1,0 +1,51 @@
+<?php
+
+return [
+    'pwfrontsalt' =>'S_)X}()yhRWDq2M&y-F[qur_v!n).*PQ#q_9#(*.sQBFc(uA8Z',
+    'pwbacksalt' =>'d=\v=a;+)#3rD=EDSucLrv&RZ8r\r$Fv8mQRmGM&wCcZkG34Z#',
+    'adminEmail' => 'grote@windcloud.de',
+    'contactEmail' => 'moin@windcloud.org',
+    'produktcontactEmail' => 'grote@windcloud.de',
+    'senderEmail' => 'noreply@windcloud.de',
+    'senderName' => 'Example.com mailer',
+    'DeleteSecret' => 'e4f5626124b0155aed8dfba2b0545064',
+    'UpdateSecret' => 'e4f5626124b0155aed8dfba2b0545064',
+    'jiraUse' => TRUE,
+    'jiraHost' => 'http://jira.windcloud.io:8080',
+    'jiraUser' => 'service@windcloud.de',
+    'jiraPassword' => '7t62UE1vrU4uJMFI',
+    'jiraCookieAuthEnabled' => FALSE,
+    'jiraCookieFile' => 'jira-cookie.txt',
+    'jiraProject' => 'NEX',
+    'jiraDefaultAssigneeName' => 'Grote',
+    'RocketChatUse' => TRUE,
+    'RocketChatHost' => 'https://jira.windcloud.de',
+    'RocketChatUser' => 'NextcloudBot',
+    'RocketChatPassword' => 'smRaTYpdC3DAud5S3',
+    'RocketChatChannel' => 'shopbestellungen',
+    'VR-Pay-Url' => 'https://test.vr-pay-ecommerce.de',
+    'VR-Pay-Token' => 'OGFjN2E0Yzg2Y2I0ZjBhNzAxNmNiOGYyZDhkNDA3ZjF8YVJlMkpBRWNTcQ==',
+    'VR-Pay-ReturnUrl' => 'https://development.windcloud.de/checkout/thanks',
+    'VR-Pay-MASTER' => '8ac7a4c86cb4f0a7016cb8f82a0207fc',
+    'VR-Pay-VISA' => '8ac7a4c86cb4f0a7016cb8f82a0207fc',
+    'VR-Pay-PAYPAL' => '8ac7a4c86cb4f0a7016cb8fd941f0816',
+    'VR-Pay-SOFORTUEBERWEISUNG' => '8ac7a4c86cb4f0a7016cb8fc06f40810',
+    'VR-Pay-PAYDIREKT' => '8ac7a4c86cb4f0a7016cb8fe281c081b',
+    'VR-Pay-GIROPAY' => '8ac7a4c86cb4f0a7016cb8f943ee0805',
+    'WECLAPP_BASE_URL'=> 'https://developmentwindcloud.weclapp.com',
+    'WECLAPP_API_KEY'=> 'b4a21908-b77d-4a11-bc19-79d80c9b6845',
+//    'WECLAPP_API_TICKETPRIORITY'=> 'hoch',
+
+
+
+//    'WECLAPP_BASE_URL'=> 'https://ydprrrwelwcsvsy.weclapp.com',
+//    'WECLAPP_API_KEY'=> 'f29759a1-aece-41d9-8107-1b98a8e7489c',
+    'WECLAPP_API_TICKETPRIORITY'=> 'hoch',
+    'WECLAPPIMPORT_BASE_URL'=> 'https://ydprrrwelwcsvsy.weclapp.com',
+    'WECLAPPIMPORT_API_KEY'=> 'f29759a1-aece-41d9-8107-1b98a8e7489c',
+   
+
+ 'NEXTCLOUD_API_HOSTNAME'=> 'next.windcloud.de',
+    'NEXTCLOUD_API_USERNAME'=> 'admin',
+    'NEXTCLOUD_API_PASSWORD'=> 'hgsajhgdsa',
+];

@@ -1,0 +1,222 @@
+<?php
+namespace app\extensions\greendev\PaypalApi;
+use Yii;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
+use yii\helpers\Url;
+class PayPal
+{
+
+    public static function getAccessToken(){
+        if(isset($_SESSION['PayPalAccessToken']) && isset($_SESSION['PayPalAccessTokenExpires'])&& $_SESSION['PayPalAccessTokenExpires'] > time()){
+            return $_SESSION['PayPalAccessToken'];
+        }
+        $client = new Client();
+        $request = $client->request('POST', \Yii::$app->params['PayPay_BASE_URL'] .'/v1/oauth2/token', [
+            'body' => "grant_type=client_credentials",
+            'headers' => [
+                'Accept' => 'application/json',
+                'Accept-Language' =>'de_DE'
+            ],
+            'auth'=>[\Yii::$app->params['PayPay_Client_ID'],\Yii::$app->params['PayPay_Secret']]
+        ]);
+        $data= json_decode($request->getBody()->getContents(),true);
+        $accessToken=$data['access_token'];
+        $_SESSION['PayPalAccessToken']=$accessToken;
+
+        $_SESSION['PayPalAccessTokenExpires']=time()+$data['expires_in'];
+        return $accessToken;
+    }
+
+    public static function getCheckout(string $accessToken, array $purchaseUnits){
+        $client = new Client();
+        $price=0;
+        foreach ($purchaseUnits as $value) {
+            $price +=$value['price']*Yii::$app->params['STEUERSATZGANZ'];
+            if(isset($value['option'])){
+                foreach ($value['option'] as $option){
+                    $price += $option['price']*Yii::$app->params['STEUERSATZGANZ'];
+                }
+            }
+        }
+        $amountObject=new \stdClass();
+        $amountObject->currency_code ="EUR";
+        $amountObject->value= number_format($price, 2, '.', '');
+        $object=new \stdClass();
+        $object->amount=$amountObject;
+        $applicationContext= new \stdClass();
+        $applicationContext->return_url =Url::base(true).'/payment/paypal';
+        $applicationContext->cancel_url =Url::base(true).'/cart';
+
+        $data=[
+            "application_context"=>$applicationContext,
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                $object
+            ]
+        ];
+        $data_string = json_encode($data);
+
+
+        $request = $client->request('POST', \Yii::$app->params['PayPay_BASE_URL'] .'/v2/checkout/orders', [
+            'body' => $data_string,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' =>'Bearer '.$accessToken
+            ],
+            'auth'=>[\Yii::$app->params['PayPay_Client_ID'],\Yii::$app->params['PayPay_Secret']]
+        ]);
+        $data= json_decode($request->getBody()->getContents(),true);
+
+        $_SESSION['PayPalOderid']=$data['id'];
+        $url='';
+        foreach ($data['links'] as $link){
+            if($link['rel'] !== "approve"){
+                continue;
+            }
+            $url = $link['href'];
+        }
+        try {
+            $session = Yii::$app->session;
+            $accountid =$session->get('accountid');
+            $customerPayPalLog = new \app\models\logserver\customerPayPalLog();
+            $customerPayPalLog->token=$data['id'];
+            $customerPayPalLog->accountid=$accountid;
+            $customerPayPalLog->checkoutResponse=json_encode($data);
+            $customerPayPalLog->cart=json_encode($purchaseUnits);
+            $customerPayPalLog->status=$data['status'];
+            if($customerPayPalLog->validate()) {
+                $customerPayPalLog->save();
+            }else{
+                return $customerPayPalLog->errors;
+            }
+        }catch (Exception $exception){
+            return $exception;
+        }
+
+        return $url;
+
+    }
+
+    public static function getDashboardCheckout(string $accessToken,$accountid, $price,$invoice){
+        $client = new Client();
+        $amountObject=new \stdClass();
+        $amountObject->currency_code ="EUR";
+        $amountObject->value= number_format($price, 2, '.', '');
+        $object=new \stdClass();
+        $object->amount=$amountObject;
+	$object->invoice_id=$invoice['invoiceNumber'];
+        $applicationContext= new \stdClass();
+        $applicationContext->return_url =Url::base(true).'/dashboard/payment-paypal';
+        $applicationContext->cancel_url =Url::base(true).'/dashboard/rechnungen';
+        $data=[
+            "application_context"=>$applicationContext,
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                $object
+            ]
+        ];
+        $data_string = json_encode($data);
+        $request = $client->request('POST', \Yii::$app->params['PayPay_BASE_URL'] .'/v2/checkout/orders', [
+            'body' => $data_string,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' =>'Bearer '.$accessToken
+            ],
+            'auth'=>[\Yii::$app->params['PayPay_Client_ID'],\Yii::$app->params['PayPay_Secret']]
+        ]);
+        $data= json_decode($request->getBody()->getContents(),true);
+
+        $_SESSION['PayPalOderid']=$data['id'];
+        $url='';
+        foreach ($data['links'] as $link){
+            if($link['rel'] !== "approve"){
+                continue;
+            }
+            $url = $link['href'];
+        }
+        try {
+            $customerPayPalLog = new \app\models\logserver\customerPayPalLog();
+            $customerPayPalLog->token=$data['id'];
+            $customerPayPalLog->accountid=$accountid;
+            $customerPayPalLog->checkoutResponse=json_encode($data);
+            $customerPayPalLog->cart=json_encode($price);
+            $customerPayPalLog->status=$data['status'];
+            if($customerPayPalLog->validate()) {
+                $customerPayPalLog->save();
+            }else{
+                return $customerPayPalLog->errors;
+            }
+        }catch (Exception $exception){
+            return $exception;
+        }
+
+        return $url;
+
+    }
+
+
+
+    public static function getCheckoutCapture(string $accessToken,string $token, string $PayerID){
+        $client = new Client();
+        $data= new \stdClass();
+        $data->payment_source =new \stdClass();
+        $data->payment_source->token= new \stdClass();
+        $data->payment_source->token->id=$token;
+        $data->payment_source->token->type='BILLING_AGREEMENT';
+        $data_string = json_encode($data);
+        $session = Yii::$app->session;
+        $accountid =$session->get('accountid');
+        $customerPayPalLog = \app\models\logserver\customerPayPalLog::find()->where(['accountid' => $accountid,'token'=> $token])->one();
+        $request = $client->request('POST', \Yii::$app->params['PayPay_BASE_URL'] .'/v2/checkout/orders/'.$token.'/capture', [
+            'body' => $data_string,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' =>'Bearer '.$accessToken,
+                'PayPal-Request-Id' =>$accountid.$token,
+            ],
+            'auth'=>[\Yii::$app->params['PayPay_Client_ID'],\Yii::$app->params['PayPay_Secret']]
+        ]);
+        $data= json_decode($request->getBody()->getContents(),true);
+        $customerPayPalLog->checkoutCaptureResponse = json_encode($data);
+        $customerPayPalLog->status = $data['status'];
+        try {
+            if($customerPayPalLog->validate()){
+                $customerPayPalLog->save();
+            }
+        }catch (Exception $exception){
+            return $exception;
+        }
+        return $data['status'];
+
+    }
+
+
+    public static function getDashboardCheckoutCapture(string $accessToken,string $token, string $PayerID){
+        $client = new Client();
+        $data= new \stdClass();
+        $data->payment_source =new \stdClass();
+        $data->payment_source->token= new \stdClass();
+        $data->payment_source->token->id=$token;
+        $data->payment_source->token->type='BILLING_AGREEMENT';
+        $data_string = json_encode($data);
+        $session = Yii::$app->session;
+        $accountid =$session->get('accountid');
+        $customerPayPalLog = \app\models\logserver\customerPayPalLog::find()->where(['accountid' => $accountid,'token'=> $token])->one();
+        $request = $client->request('POST', \Yii::$app->params['PayPay_BASE_URL'] .'/v2/checkout/orders/'.$token.'/capture', [
+            'body' => $data_string,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' =>'Bearer '.$accessToken,
+                'PayPal-Request-Id' =>$accountid.$token,
+            ],
+            'auth'=>[\Yii::$app->params['PayPay_Client_ID'],\Yii::$app->params['PayPay_Secret']]
+        ]);
+        $data= json_decode($request->getBody()->getContents(),true);
+
+        return $data['status'];
+
+    }
+
+}

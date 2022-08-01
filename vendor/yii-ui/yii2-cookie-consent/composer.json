@@ -1,0 +1,51 @@
+{
+    "name": "yii-ui/yii2-cookie-consent",
+    "keywords": [
+        "yii2",
+        "yii-ui",
+        "extension",
+        "widget",
+        "plugin",
+        "cookie-consent",
+        "gdpr"
+    ],
+    "type": "yii2-extension",
+    "description": "Cookie Consent widget for Yii 2.",
+    "license": "MIT",
+    "homepage": "https://www.yii-ui.com/packages/yii2-cookie-consent",
+    "support": {
+        "issues": "https://gitlab.com/yii-ui/yii2-cookie-consent/issues",
+        "source": "https://gitlab.com/yii-ui/yii2-cookie-consent"
+    },
+    "authors": [
+        {
+            "name": "Christoph Möke",
+            "email": "christophmoeke@gmail.com",
+            "role": "Project Leader"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "yiisoft/yii2": "^2.0.21",
+        "npm-asset/cookieconsent": "^3.1.1"
+    },
+    "config": {
+        "process-timeout": 1800,
+        "fxp-asset": {
+            "enabled": false
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "yiiui\\yii2cookieconsent\\": "src"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-contact</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy" transform="translate(-317.000000, -18.000000)">
+            <g id="icon-contact" transform="translate(317.000000, 18.000000)">
+                <rect id="phone-circle" stroke="#88BB55" stroke-width="3" fill-rule="nonzero" x="1.5" y="1.5" width="37" height="37" rx="18.5"></rect>
+                <path d="M20.6961048,22.2281439 C19.001024,23.9232248 17.0380959,25.5435825 16.2623882,24.7676607 C15.1513898,23.6568764 14.4664632,22.6893293 12.0177276,24.6573959 C9.56877788,26.6263189 11.4497032,27.9381492 12.5258022,29.0146765 C13.7676197,30.2562799 18.3968155,29.079979 22.9724848,24.5049521 C27.5475116,19.9288546 28.724669,15.2996588 27.4819951,14.0574131 C26.4056819,12.9810999 25.0938516,11.100817 23.125785,13.5499808 C21.1572902,15.9980741 22.1244091,16.6832148 23.2356216,17.7942132 C24.0111152,18.570135 22.3911857,20.532849 20.6961048,22.2281439 Z" id="Path" fill="#88BB55"></path>
+            </g>
+        </g>
+    </g>
+</svg>
